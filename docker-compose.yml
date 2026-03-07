@@ -9,9 +9,14 @@ services:
       CLAUDE_AI_SESSION_KEY: ${CLAUDE_AI_SESSION_KEY:-}
       CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY:-}
       CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE:-}
+      PLAYWRIGHT_BROWSERS_PATH: /home/node/.cache/ms-playwright
+      OPENCLAW_RELAY_BIND_ALL: "1"
+      DISPLAY: ":99"
     volumes:
       - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
+      - ./chrome-DEp-MaR1.js:/app/dist/chrome-DEp-MaR1.js:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       ## Uncomment the lines below to enable sandbox isolation
       ## (agents.defaults.sandbox). Requires Docker CLI in the image
       ## (build with --build-arg OPENCLAW_INSTALL_DOCKER_CLI=1) or use
@@ -23,17 +28,14 @@ services:
     ports:
       - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
       - "${OPENCLAW_BRIDGE_PORT:-18790}:18790"
+      - "18792:18792"
     init: true
     restart: unless-stopped
+    shm_size: '2gb'
     command:
       [
-        "node",
-        "dist/index.js",
-        "gateway",
-        "--bind",
-        "${OPENCLAW_GATEWAY_BIND:-lan}",
-        "--port",
-        "18789",
+        "sh", "-c",
+        "rm -f /home/node/.openclaw/browser/*/user-data/Singleton*; rm -f /tmp/.X99-lock && Xvfb :99 -screen 0 1280x720x24 -nolisten tcp & sleep 1 && exec node dist/index.js gateway --bind ${OPENCLAW_GATEWAY_BIND:-lan} --port 18789"
       ]
     healthcheck:
       test:
@@ -47,6 +49,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
 
   openclaw-cli:
     image: ${OPENCLAW_IMAGE:-openclaw:local}

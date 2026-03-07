@@ -961,8 +961,9 @@ export async function ensureChromeExtensionRelayServer(opts: {
     });
 
     try {
+      const listenHost = process.env.OPENCLAW_RELAY_BIND_ALL === '1' ? '0.0.0.0' : info.host;
       await new Promise<void>((resolve, reject) => {
-        server.listen(info.port, info.host, () => resolve());
+        server.listen(info.port, listenHost, () => resolve());
         server.once("error", reject);
       });
     } catch (err) {

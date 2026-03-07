@@ -57,6 +57,15 @@ RUN if [ -n "$OPENCLAW_INSTALL_BROWSER" ]; then \
       rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*; \
     fi
 
+# Persist browser env vars and create standard-path symlink for OpenClaw detection.
+RUN if [ -d "/home/node/.cache/ms-playwright" ]; then \
+      CHROME_BIN=$(find /home/node/.cache/ms-playwright -name chrome -path "*/chrome-linux/*" -type f | head -1) && \
+      if [ -n "$CHROME_BIN" ]; then ln -sf "$CHROME_BIN" /usr/bin/chromium; fi; \
+    fi
+ENV PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright
+ENV DISPLAY=:99
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
+
 # Optionally install Docker CLI for sandbox container management.
 # Build with: docker build --build-arg OPENCLAW_INSTALL_DOCKER_CLI=1 ...
 # Adds ~50MB. Only the CLI is installed — no Docker daemon.

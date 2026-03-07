@@ -423,8 +423,40 @@ export function createLaneTextDeliverer(params: CreateLaneTextDelivererParams) {
           return "preview-finalized";
         }
       } else if (!hasMedia && !payload.isError && text.length > params.draftMaxChars) {
+        // A2: preserve the active preview by editing it to the first chunk,
+        // then send the remainder as a follow-up message.
+        const activePreviewMessageId = lane.stream?.messageId();
+        if (typeof activePreviewMessageId === "number") {
+          params.log(
+            `telegram: preview final too long (${text.length} > ${params.draftMaxChars}); editing preview to first chunk and sending remainder`,
+          );
+          await params.stopDraftLane(lane);
+          const firstChunk = text.slice(0, params.draftMaxChars);
+          const remainder = text.slice(params.draftMaxChars);
+          try {
+            await params.editPreview({
+              laneName,
+              messageId: activePreviewMessageId,
+              text: firstChunk,
+              context: "final",
+              previewButtons,
+            });
+          } catch (err) {
+            params.log(
+              `telegram: ${laneName} overflow preview edit failed; falling back to standard send (${String(err)})`,
+            );
+            const delivered = await params.sendPayload(params.applyTextToPayload(payload, text));
+            return delivered ? "sent" : "skipped";
+          }
+          params.finalizedPreviewByLane[laneName] = true;
+          params.markDelivered();
+          if (remainder.length > 0) {
+            await params.sendPayload(params.applyTextToPayload(payload, remainder));
+          }
+          return "preview-finalized";
+        }
         params.log(
-          `telegram: preview final too long for edit (${text.length} > ${params.draftMaxChars}); falling back to standard send`,
+          `telegram: preview final too long (${text.length} > ${params.draftMaxChars}); no active preview, falling back to standard send`,
         );
       }
       await params.stopDraftLane(lane);

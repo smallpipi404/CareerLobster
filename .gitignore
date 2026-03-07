@@ -121,3 +121,9 @@ dist/protocol.schema.json
 
 # Synthing
 **/.stfolder/
+
+# Career Lobster temp files
+temp_*.md
+chrome-*.js
+logs/
+.env
