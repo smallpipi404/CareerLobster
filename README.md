@@ -1,13 +1,13 @@
 # 🦞🔮 Career Lobster
 
-**AI Career Agent with Multiverse Simulation & Full UK Job Pipeline**
+**Career Best Practice — For Everyone.**
 
-> Explore 15–30 parallel career timelines, then let five AI lobsters carry you from simulation to signed contract.
+> We believe every person deserves to discover their own Career Best Practice — not just those with elite networks or expensive advisors. OpenClaw makes world-class career intelligence accessible to everyone.
 
 ---
 
 ![Career Multiverse](docs/demo-multiverse.png)
-*Interactive Canvas timeline explorer — visualise your parallel career futures with success probabilities, salary trajectories, and visa pathways.*
+*Career Multiverse — explore 15–30 parallel career timelines with success probabilities, salary trajectories, and visa pathways on an interactive Canvas.*
 
 ---
 

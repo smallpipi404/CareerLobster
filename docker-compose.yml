@@ -16,6 +16,7 @@ services:
       - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
       - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
       - ./chrome-DEp-MaR1.js:/app/dist/chrome-DEp-MaR1.js:ro
+      - ./workspace/AGENTS.md:/home/node/.openclaw/workspace/AGENTS.md:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       ## Uncomment the lines below to enable sandbox isolation
       ## (agents.defaults.sandbox). Requires Docker CLI in the image

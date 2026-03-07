@@ -78,6 +78,18 @@ export async function authorizeCanvasRequest(params: {
   if (malformedScopedPath) {
     return { ok: false, reason: "unauthorized" };
   }
+
+  // Allow unauthenticated access to canvas static files (/__openclaw__/canvas/)
+  // so users can view Career Multiverse HTML via public ngrok URL without Bearer token.
+  // This does NOT affect A2UI_PATH or CANVAS_WS_PATH which remain fully authenticated.
+  const canvasUrl = new URL(req.url ?? "/", "http://localhost");
+  if (
+    canvasUrl.pathname === CANVAS_HOST_PATH ||
+    canvasUrl.pathname.startsWith(`${CANVAS_HOST_PATH}/`)
+  ) {
+    return { ok: true };
+  }
+
   if (isLocalDirectRequest(req, trustedProxies, allowRealIpFallback)) {
     return { ok: true };
   }
